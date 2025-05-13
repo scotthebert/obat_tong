@@ -47,7 +47,16 @@ obat2$`Family planning missing` <- ifelse(obat$`Family planning missing` == "Yes
 obat2$`Pap smear missing` <- ifelse(obat$`Pap smear missing` == "Yes", 1, 0)
 obat2$`PrEP missing` <- ifelse(obat$`PrEP missing` == "Yes", 1, 0)
 
+# Logistic regression models ------------ 
+
 # Age and race vs missing visits
 agerace.famp <- glm(`Family planning missing` ~ Age + Race, family = "binomial", 
                     data = obat2)
 summary(agerace.famp)
+
+agerace.papsm <- glm(`Pap smear missing` ~ Age + Race, family = "binomial", 
+                     data = obat2)
+summary(agerace.papsm)
+
+agerace.prep <- glm(`PrEP missing` ~ Age + Race, family = "binomial", data = obat2)
+summary(agerace.prep)
