@@ -3,13 +3,13 @@ title: "obat_analysis_visuals"
 output: html_document
 ---
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 library(tidyverse)
 
 obat <- read_csv("C:/Users/hebers/Downloads/OBAT Project_DataAnalysis.csv")
 ```
 
-```{r}
+```{r, include = FALSE}
 p.famplan <- ggplot(obat, aes(`Family planning missing`)) + geom_bar()
 p.famplan
 
