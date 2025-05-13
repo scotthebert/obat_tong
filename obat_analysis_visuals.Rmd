@@ -54,5 +54,12 @@ obat2$`PrEP missing` <- ifelse(obat$`PrEP missing` == "Yes", 1, 0)
 agerace.famp <- glm(`Family planning missing` ~ Age + Race, family = "binomial", 
                     data = obat2)
 summary(agerace.famp)
+
+agerace.papsm <- glm(`Pap smear missing` ~ Age + Race, family = "binomial", 
+                     data = obat2)
+summary(agerace.papsm)
+
+agerace.prep <- glm(`PrEP missing` ~ Age + Race, family = "binomial", data = obat2)
+summary(agerace.prep)
 ```
 
