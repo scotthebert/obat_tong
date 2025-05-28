@@ -49,6 +49,12 @@ p.mar
 # Data transformation
 
 ```{r}
+# Fixing ethnicity data
+obat$Ethnicity <- ifelse(obat$Ethnicity == "Puerto Rican", "Hispanic or Latino", 
+                         ifelse(obat$Ethnicity == "Declined", "Declined", 
+                                ifelse(obat$Ethnicity == "Hispanic or Latino", "Hispanic or Latino", 
+                                       "Not Hispanic or Latino")))
+obat$Ethnicity <- relevel(as.factor(obat$Ethnicity), ref = "Not Hispanic or Latino")
 # Binary data
 obat2 <- obat
 obat2$`Family planning missing` <- ifelse(obat$`Family planning missing` == "Yes", 
@@ -67,15 +73,15 @@ obat45 <- obat2 %>%
 # Models, missing services
 
 ```{r}
-agerace.famp45 <- glm(`Family planning missing` ~ Age + Race, family = "binomial", 
+agerace.famp45 <- glm(`Family planning missing` ~ Age + Ethnicity, family = "binomial", 
                     data = obat45)
 summary(agerace.famp45)
 
-agerace.papsm <- glm(`Pap smear missing` ~ Age + Race, family = "binomial", 
+agerace.papsm <- glm(`Pap smear missing` ~ Age + Ethnicity, family = "binomial", 
                      data = obat2)
 summary(agerace.papsm)
 
-agerace.prep <- glm(`PrEP missing` ~ Age + Race, family = "binomial", data = obat2)
+agerace.prep <- glm(`PrEP missing` ~ Age, family = "binomial", data = obat2)
 summary(agerace.prep)
 ```
 
@@ -105,7 +111,7 @@ summary(fpfu)
 ```{r}
 # Pap smear follow-up
 # NOTE: Discussed is counted as a "Yes" here
-psfu <- glm(`Pap smear Follow Up` ~ Age, family = "binomial", data = obat2)
+psfu <- glm(`Pap smear Follow Up` ~ Age + Ethnicity, family = "binomial", data = obat2)
 summary(psfu)
 ```
 
@@ -122,6 +128,10 @@ table(obat$`Pap smear missing`, obat$`PrEP missing`)
 
 ```{r}
 table(obat45$`Family planning missing`, obat45$`Pap smear missing`)
+
+fpps <- glm(`Family planning missing` ~ `Pap smear missing`, family = "binomial", 
+            data = obat45)
+summary(fpps)
 ```
 
 ```{r}
