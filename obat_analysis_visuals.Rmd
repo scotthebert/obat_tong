@@ -9,6 +9,8 @@ library(tidyverse)
 obat <- read_csv("C:/Users/hebers/Downloads/OBAT Project_DataAnalysis.csv")
 ```
 
+# Initial visuals
+
 ```{r, echo = FALSE}
 p.famplan <- ggplot(obat, aes(`Family planning missing`)) + geom_bar()
 p.famplan
@@ -42,7 +44,11 @@ p.lang
 
 p.mar <- ggplot(obat, aes(`Martial status`)) + geom_bar()
 p.mar
+```
 
+# Data transformation
+
+```{r}
 # Binary data
 obat2 <- obat
 obat2$`Family planning missing` <- ifelse(obat$`Family planning missing` == "Yes", 
@@ -50,10 +56,20 @@ obat2$`Family planning missing` <- ifelse(obat$`Family planning missing` == "Yes
 obat2$`Pap smear missing` <- ifelse(obat$`Pap smear missing` == "Yes", 1, 0)
 obat2$`PrEP missing` <- ifelse(obat$`PrEP missing` == "Yes", 1, 0)
 
-# Age and race vs missing visits
-agerace.famp <- glm(`Family planning missing` ~ Age + Race, family = "binomial", 
-                    data = obat2)
-summary(agerace.famp)
+obat2$`Pap smear Follow Up` <- ifelse(obat$`Pap smear Follow Up` == "No", 0, 1)
+obat2$`PrEP Follow Up` <- ifelse(obat$`PrEP Follow Up` == "No", 0, 1)
+
+# Age limit
+obat45 <- obat2 %>% 
+  filter(Age <= 45)
+```
+
+# Models, missing services
+
+```{r}
+agerace.famp45 <- glm(`Family planning missing` ~ Age + Race, family = "binomial", 
+                    data = obat45)
+summary(agerace.famp45)
 
 agerace.papsm <- glm(`Pap smear missing` ~ Age + Race, family = "binomial", 
                      data = obat2)
@@ -61,5 +77,54 @@ summary(agerace.papsm)
 
 agerace.prep <- glm(`PrEP missing` ~ Age + Race, family = "binomial", data = obat2)
 summary(agerace.prep)
+```
+
+# Models, follow-up appointments
+
+```{r}
+# Family planning follow-up
+obatfpfu <- obat %>% 
+  filter(Age <= 45) %>% 
+  filter(`Family planning missing` == "Yes")
+table(obatfpfu$`Family Planning Follow Up`, obatfpfu$Age)
+table(obatfpfu$`Family Planning Follow Up`, obatfpfu$Race)
+obatfpfu_n <- obatfpfu %>% filter(`Family Planning Follow Up` == "No")
+obatfpfu_y <- obatfpfu %>% filter(`Family Planning Follow Up` == "Yes")
+obatfpfu_p <- obatfpfu %>% filter(`Family Planning Follow Up` == "Pregnant")
+mean(obatfpfu_n$Age)
+mean(obatfpfu_y$Age)
+mean(obatfpfu_p$Age)
+
+obatfpfum <- obatfpfu
+obatfpfum$`Family Planning Follow Up` <- ifelse(obatfpfum$`Family Planning Follow Up` 
+                                                == "No", 0, 1)
+fpfu <- glm(`Family Planning Follow Up` ~ Age, family = "binomial", data = obatfpfum)
+summary(fpfu)
+```
+
+```{r}
+# Pap smear follow-up
+# NOTE: Discussed is counted as a "Yes" here
+psfu <- glm(`Pap smear Follow Up` ~ Age, family = "binomial", data = obat2)
+summary(psfu)
+```
+
+```{r}
+# PrEP follow-up
+# There is no variation in PrEP follow-up data, so no model is needed
+```
+
+# Missing more than one service
+
+```{r}
+table(obat$`Pap smear missing`, obat$`PrEP missing`)
+```
+
+```{r}
+table(obat45$`Family planning missing`, obat45$`Pap smear missing`)
+```
+
+```{r}
+table(obat45$`Family planning missing`, obat45$`PrEP missing`)
 ```
 
