@@ -73,9 +73,10 @@ obat45 <- obat2 %>%
 # Models, missing services
 
 ```{r}
-agerace.famp45 <- glm(`Family planning missing` ~ Age + Ethnicity, family = "binomial", 
+agerace.famp45 <- glm(`Family planning missing` ~ Age, family = "binomial", 
                     data = obat45)
 summary(agerace.famp45)
+exp(summary(agerace.famp45)$coefficients[,1])
 
 agerace.papsm <- glm(`Pap smear missing` ~ Age + Ethnicity, family = "binomial", 
                      data = obat2)
@@ -106,6 +107,7 @@ obatfpfum$`Family Planning Follow Up` <- ifelse(obatfpfum$`Family Planning Follo
                                                 == "No", 0, 1)
 fpfu <- glm(`Family Planning Follow Up` ~ Age, family = "binomial", data = obatfpfum)
 summary(fpfu)
+exp(summary(fpfu)$coefficients[,1])
 ```
 
 ```{r}
@@ -132,6 +134,7 @@ table(obat45$`Family planning missing`, obat45$`Pap smear missing`)
 fpps <- glm(`Family planning missing` ~ `Pap smear missing`, family = "binomial", 
             data = obat45)
 summary(fpps)
+exp(summary(fpps)$coefficients[,1])
 ```
 
 ```{r}
