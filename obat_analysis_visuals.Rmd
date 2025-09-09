@@ -130,9 +130,13 @@ table(obat$`Pap smear missing`, obat$`PrEP missing`)
 
 ```{r}
 table(obat45$`Family planning missing`, obat45$`Pap smear missing`)
+obat45v2 <- obat45
+obat45v2$`Family planning missing` <- relevel(as.factor(obat45v2$`Family planning missing`), ref = "1")
+obat45v2$`Pap smear missing` <- relevel(as.factor(obat45v2$`Pap smear missing`), ref = "1")
+
 
 fpps <- glm(`Family planning missing` ~ `Pap smear missing`, family = "binomial", 
-            data = obat45)
+            data = obat45v2)
 summary(fpps)
 exp(summary(fpps)$coefficients[,1])
 ```
